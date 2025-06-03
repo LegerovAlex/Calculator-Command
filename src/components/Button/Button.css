@@ -1,0 +1,30 @@
+.button {
+  width: 60px;
+  height: 60px;
+  background-color: #333;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  line-height: 60px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.button:hover {
+  filter: brightness(120%);
+}
+
+.button:active {
+  filter: brightness(90%);
+}
+
+.button--orange {
+  background-color: orange;
+  color: white;
+}
+
+.button--lightgray {
+  background-color: #a5a5a5;
+  color: black;
+}

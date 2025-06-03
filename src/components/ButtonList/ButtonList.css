@@ -1,0 +1,18 @@
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 15px;
+}
+
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.button-row:last-child .button:first-child {
+  flex: 2;
+  border-radius: 30px;
+  text-align: center;
+}
