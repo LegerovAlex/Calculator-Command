@@ -3,6 +3,7 @@ import { createElement } from '../../utils/createElement';
 import { ButtonsList } from '../ButtonList/ButtonList';
 import { Display } from '../Display/Display';
 import { CalculatorController } from '../../logic/calculatorController';
+import { operationButtons } from '../../const/buttons';
 
 export const Calculator = () => {
   const buttonsList = ButtonsList();
@@ -18,7 +19,7 @@ export const Calculator = () => {
 
     if (!isNaN(value) || value === '.') {
       controller.inputDigit(value);
-    } else if (['+', '-', '*', '/', '+/-'].includes(value)) {
+    } else if (operationButtons.includes(value)) {
       controller.setOperation(value);
     } else if (value === '=') {
       controller.executeOperation();

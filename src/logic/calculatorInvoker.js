@@ -8,6 +8,9 @@ export class CalculatorInvoker {
   }
 
   execute(a, b) {
+    if (this.command.isUnary) {
+      return this.command.execute(a);
+    }
     return this.command.execute(a, b);
   }
 }

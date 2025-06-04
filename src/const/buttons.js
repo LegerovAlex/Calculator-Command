@@ -30,3 +30,24 @@ export const buttonsStyleData = {
     '!',
   ],
 };
+
+export const operationButtons = [
+  'MC',
+  'M+',
+  'M-',
+  'MR',
+  'x²',
+  'x³',
+  '√',
+  '∛',
+  'xʸ',
+  '10ˣ',
+  '1/x',
+  '!',
+  '/',
+  '*',
+  '-',
+  '+',
+  '+/-',
+  '%',
+];

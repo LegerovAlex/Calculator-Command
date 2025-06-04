@@ -1,8 +1,17 @@
 import {
   AddCommand,
+  CubeCommand,
+  CubeRootCommand,
   DivideCommand,
+  FactorialCommand,
+  InverseCommand,
   MultiplyCommand,
+  PercentageCommand,
+  PowerCommand,
+  SquareCommand,
+  SquareRootCommand,
   SubtractCommand,
+  TenPowerCommand,
   ToggleSignCommand,
 } from '../logic/commands';
 import { CalculatorInvoker } from './calculatorInvoker';
@@ -24,16 +33,6 @@ export class CalculatorController {
   }
 
   setOperation(symbol) {
-    if (this.currentValue !== null && this.operator !== null) {
-      this.executeOperation();
-      this.previousValue = this.currentValue;
-    } else {
-      this.previousValue = this.currentValue;
-    }
-
-    this.currentValue = '';
-    this.operator = symbol;
-
     switch (symbol) {
       case '+':
         this.invoker.setCommand(new AddCommand());
@@ -50,6 +49,64 @@ export class CalculatorController {
       case '+/-':
         this.invoker.setCommand(new ToggleSignCommand());
         break;
+      case 'x²':
+        this.invoker.setCommand(new SquareCommand());
+        break;
+      case 'x³':
+        this.invoker.setCommand(new CubeCommand());
+        break;
+      case '%':
+        this.invoker.setCommand(new PercentageCommand());
+        break;
+      case '1/x':
+        this.invoker.setCommand(new InverseCommand());
+        break;
+      case '!':
+        this.invoker.setCommand(new FactorialCommand());
+        break;
+      case '10ˣ':
+        this.invoker.setCommand(new TenPowerCommand());
+        break;
+      case 'xʸ':
+        this.invoker.setCommand(new PowerCommand());
+        break;
+      case '√':
+        this.invoker.setCommand(new SquareRootCommand());
+        break;
+      case '∛':
+        this.invoker.setCommand(new CubeRootCommand());
+        break;
+    }
+
+    if (this.invoker.command?.isUnary) {
+      this.applyUnaryOperation();
+      return;
+    }
+
+    if (this.currentValue !== null && this.operator !== null) {
+      this.executeOperation();
+      this.previousValue = this.currentValue;
+    } else {
+      this.previousValue = this.currentValue;
+    }
+
+    this.currentValue = '';
+    this.operator = symbol;
+  }
+
+  applyUnaryOperation() {
+    if (!this.invoker.command?.isUnary) {
+      return;
+    }
+    try {
+      const value = parseFloat(this.currentValue);
+      const rawResult = this.invoker.execute(value);
+      const result = parseFloat(rawResult.toFixed(10));
+      this.currentValue = String(result);
+      this.lastCommand = this.invoker.command;
+      this.updateDisplay(this.currentValue);
+    } catch (error) {
+      this.updateDisplay(error);
     }
   }
 
