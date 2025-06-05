@@ -95,7 +95,7 @@ export class FactorialCommand extends Command {
   }
   execute(a) {
     if (a < 0 || a % 1 !== 0) {
-      throw new Error('Invalid input for factorial');
+      throw new Error('Negative number');
     }
 
     function factorial(n) {
@@ -131,9 +131,6 @@ export class SquareRootCommand extends Command {
     this.isUnary = true;
   }
   execute(a) {
-    if (a < 0) {
-      throw new Error('Negative number');
-    }
     return a ** 0.5;
   }
 }
@@ -148,5 +145,37 @@ export class CubeRootCommand extends Command {
       throw new Error('Negative number');
     }
     return a ** (1 / 3);
+  }
+}
+
+export class MemoryClearCommand extends Command {
+  constructor() {
+    super();
+    this.isUnary = true;
+  }
+  execute() {
+    return 0;
+  }
+}
+
+export class MemoryAddCommand extends Command {
+  execute(a, memory) {
+    return memory + a;
+  }
+}
+
+export class MemorySubtractCommand extends Command {
+  execute(a, memory) {
+    return memory - a;
+  }
+}
+
+export class MemoryRecallCommand extends Command {
+  constructor() {
+    super();
+    this.isUnary = true;
+  }
+  execute(memory) {
+    return memory;
   }
 }

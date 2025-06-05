@@ -5,6 +5,10 @@ import {
   DivideCommand,
   FactorialCommand,
   InverseCommand,
+  MemoryAddCommand,
+  MemoryClearCommand,
+  MemoryRecallCommand,
+  MemorySubtractCommand,
   MultiplyCommand,
   PercentageCommand,
   PowerCommand,
@@ -29,6 +33,7 @@ export class CalculatorController {
     this.operator = null;
     this.lastCommand = null;
     this.lastOperand = null;
+    this.memory = 0;
     this.updateDisplay('0');
   }
 
@@ -167,7 +172,44 @@ export class CalculatorController {
     this.updateDisplay(this.currentValue);
   }
 
+  memoryOperations(symbol) {
+    const value = parseFloat(this.currentValue);
+
+    switch (symbol) {
+      case 'MC':
+        this.invoker.setCommand(new MemoryClearCommand());
+        this.memory = this.invoker.execute();
+        this.updateDisplay(this.currentValue);
+        break;
+
+      case 'MR':
+        this.invoker.setCommand(new MemoryRecallCommand());
+        const recalled = this.invoker.execute(this.memory);
+        this.currentValue = String(recalled);
+        this.updateDisplay(this.currentValue);
+        break;
+
+      case 'M+':
+        this.invoker.setCommand(new MemoryAddCommand());
+        this.memory = this.invoker.execute(value, this.memory);
+        break;
+
+      case 'M-':
+        this.invoker.setCommand(new MemorySubtractCommand());
+        this.memory = this.invoker.execute(value, this.memory);
+        break;
+    }
+
+    this.currentValue = '0';
+    this.previousValue = null;
+  }
+
   updateDisplay(value) {
-    this.displayElement.textContent = value;
+    if (isNaN(Number(value))) {
+      this.displayElement.textContent = value;
+    } else {
+      const formatted = value.toString().slice(0, 12);
+      this.displayElement.textContent = formatted;
+    }
   }
 }

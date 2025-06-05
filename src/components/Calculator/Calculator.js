@@ -3,7 +3,7 @@ import { createElement } from '../../utils/createElement';
 import { ButtonsList } from '../ButtonList/ButtonList';
 import { Display } from '../Display/Display';
 import { CalculatorController } from '../../logic/calculatorController';
-import { operationButtons } from '../../const/buttons';
+import { memoryOperationButtons, operationButtons } from '../../const/buttons';
 
 export const Calculator = () => {
   const buttonsList = ButtonsList();
@@ -25,6 +25,8 @@ export const Calculator = () => {
       controller.executeOperation();
     } else if (value === 'AC') {
       controller.clear();
+    } else if (memoryOperationButtons.includes(value)) {
+      controller.memoryOperations(value);
     }
   });
 

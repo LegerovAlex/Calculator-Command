@@ -32,10 +32,6 @@ export const buttonsStyleData = {
 };
 
 export const operationButtons = [
-  'MC',
-  'M+',
-  'M-',
-  'MR',
   'x²',
   'x³',
   '√',
@@ -51,3 +47,5 @@ export const operationButtons = [
   '+/-',
   '%',
 ];
+
+export const memoryOperationButtons = ['MC', 'M+', 'M-', 'MR'];
