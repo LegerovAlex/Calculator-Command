@@ -21,12 +21,28 @@ export const Calculator = () => {
       controller.inputDigit(value);
     } else if (operationButtons.includes(value)) {
       controller.setOperation(value);
+      if (controller.invoker.command?.isUnary) {
+        try {
+          controller.invoker.execute();
+        } catch (error) {
+          controller.updateDisplay(error);
+        }
+      }
     } else if (value === '=') {
-      controller.executeOperation();
+      try {
+        controller.invoker.execute();
+      } catch (error) {
+        controller.updateDisplay(error);
+      }
     } else if (value === 'AC') {
       controller.clear();
     } else if (memoryOperationButtons.includes(value)) {
-      controller.memoryOperations(value);
+      try {
+        controller.memoryOperations(value);
+        controller.invoker.execute();
+      } catch (error) {
+        controller.updateDisplay(error);
+      }
     }
   });
 

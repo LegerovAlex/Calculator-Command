@@ -1,5 +1,8 @@
+import { executeBinaryOperation, executeUnaryOperation } from '../utils/executeOperations';
+
 class Command {
-  constructor() {
+  constructor(controller) {
+    this.controller = controller;
     this.isUnary = false;
   }
   execute() {
@@ -8,174 +11,217 @@ class Command {
 }
 
 export class AddCommand extends Command {
-  execute(a, b) {
-    return a + b;
+  constructor(controller) {
+    super(controller);
+  }
+  execute() {
+    return executeBinaryOperation(this.controller, (a, b) => a + b);
   }
 }
 
 export class DivideCommand extends Command {
-  execute(a, b) {
-    if (b === 0) {
-      throw new Error('Division by zero');
-    } else {
+  constructor(controller) {
+    super(controller);
+  }
+  execute() {
+    return executeBinaryOperation(this.controller, (a, b) => {
+      if (b === 0) {
+        throw new Error('Division by zero');
+      }
       return a / b;
-    }
+    });
   }
 }
 
 export class MultiplyCommand extends Command {
-  execute(a, b) {
-    return a * b;
+  constructor(controller) {
+    super(controller);
+  }
+  execute() {
+    return executeBinaryOperation(this.controller, (a, b) => a * b);
   }
 }
 
 export class SubtractCommand extends Command {
-  execute(a, b) {
-    return a - b;
+  constructor(controller) {
+    super(controller);
+  }
+  execute() {
+    return executeBinaryOperation(this.controller, (a, b) => a - b);
   }
 }
 
 export class ToggleSignCommand extends Command {
-  constructor() {
-    super();
+  constructor(controller) {
+    super(controller);
     this.isUnary = true;
   }
-  execute(a) {
-    return a * -1;
+  execute() {
+    return executeUnaryOperation(this.controller, (a) => a * -1);
   }
 }
 
 export class SquareCommand extends Command {
-  constructor() {
-    super();
+  constructor(controller) {
+    super(controller);
     this.isUnary = true;
   }
-  execute(a) {
-    return a * a;
+  execute() {
+    return executeUnaryOperation(this.controller, (a) => a * a);
   }
 }
 
 export class CubeCommand extends Command {
-  constructor() {
-    super();
+  constructor(controller) {
+    super(controller);
     this.isUnary = true;
   }
-  execute(a) {
-    return a * a * a;
+  execute() {
+    return executeUnaryOperation(this.controller, (a) => a * a * a);
   }
 }
 
 export class PercentageCommand extends Command {
-  constructor() {
-    super();
+  constructor(controller) {
+    super(controller);
     this.isUnary = true;
   }
-  execute(a) {
-    return a / 100;
+  execute() {
+    return executeUnaryOperation(this.controller, (a) => a / 100);
   }
 }
 
 export class InverseCommand extends Command {
-  constructor() {
-    super();
+  constructor(controller) {
+    super(controller);
     this.isUnary = true;
   }
-  execute(a) {
-    if (a === 0) {
-      throw new Error('Division by zero');
-    }
-    return 1 / a;
+
+  execute() {
+    return executeUnaryOperation(this.controller, (a) => {
+      if (a === 0) {
+        throw new Error('Division by zero');
+      }
+      return 1 / a;
+    });
   }
 }
 
 export class FactorialCommand extends Command {
-  constructor() {
-    super();
+  constructor(controller) {
+    super(controller);
     this.isUnary = true;
   }
-  execute(a) {
-    if (a < 0 || a % 1 !== 0) {
-      throw new Error('Negative number');
-    }
-
-    function factorial(n) {
-      if (n === 0 || n === 1) {
-        return 1;
+  execute() {
+    return executeUnaryOperation(this.controller, (a) => {
+      if (a < 0 || a % 1 !== 0) {
+        throw new Error('Negative number');
       }
-      return n * factorial(n - 1);
-    }
-
-    return factorial(a);
+      function factorial(n) {
+        if (n === 0 || n === 1) {
+          return 1;
+        }
+        return n * factorial(n - 1);
+      }
+      return factorial(a);
+    });
   }
 }
-
 export class TenPowerCommand extends Command {
-  constructor() {
-    super();
+  constructor(controller) {
+    super(controller);
     this.isUnary = true;
   }
-  execute(a) {
-    return 10 ** a;
+  execute() {
+    return executeUnaryOperation(this.controller, (a) => 10 ** a);
   }
 }
 
 export class PowerCommand extends Command {
-  execute(a, b) {
-    return a ** b;
+  constructor(controller) {
+    super(controller);
+  }
+  execute() {
+    return executeBinaryOperation(this.controller, (a, b) => a ** b);
   }
 }
 
 export class SquareRootCommand extends Command {
-  constructor() {
-    super();
+  constructor(controller) {
+    super(controller);
     this.isUnary = true;
   }
-  execute(a) {
-    return a ** 0.5;
+  execute() {
+    return executeUnaryOperation(this.controller, (a) => a ** 0.5);
   }
 }
 
 export class CubeRootCommand extends Command {
-  constructor() {
-    super();
+  constructor(controller) {
+    super(controller);
     this.isUnary = true;
   }
-  execute(a) {
-    if (a < 0) {
-      throw new Error('Negative number');
-    }
-    return a ** (1 / 3);
+
+  execute() {
+    return executeUnaryOperation(this.controller, (a) => a ** (1 / 3));
   }
 }
 
 export class MemoryClearCommand extends Command {
-  constructor() {
-    super();
+  constructor(controller) {
+    super(controller);
     this.isUnary = true;
   }
+
   execute() {
-    return 0;
+    this.controller.memory = 0;
+    this.controller.currentValue = '0';
+    this.controller.previousValue = null;
+    this.controller.updateDisplay(this.controller.currentValue);
+
+    return this.controller.memory;
   }
 }
 
 export class MemoryAddCommand extends Command {
-  execute(a, memory) {
-    return memory + a;
+  constructor(controller) {
+    super(controller);
+  }
+  execute() {
+    const { currentValue, memory } = this.controller.getState();
+    const value = parseFloat(currentValue);
+    this.controller.memory = memory + value;
+    this.controller.previousValue = null;
+    this.controller.currentValue = '0';
+    this.controller.updateDisplay(currentValue);
+    return this.controller.memory;
   }
 }
-
 export class MemorySubtractCommand extends Command {
-  execute(a, memory) {
-    return memory - a;
+  constructor(controller) {
+    super(controller);
+  }
+  execute() {
+    const { currentValue, memory } = this.controller.getState();
+    const value = parseFloat(currentValue);
+    this.controller.memory = memory - value;
+    this.controller.previousValue = null;
+    this.controller.currentValue = '0';
+    this.controller.updateDisplay(currentValue);
+    return this.controller.memory;
   }
 }
 
 export class MemoryRecallCommand extends Command {
-  constructor() {
-    super();
+  constructor(controller) {
+    super(controller);
     this.isUnary = true;
   }
-  execute(memory) {
+  execute() {
+    const { memory } = this.controller.getState();
+    this.controller.currentValue = String(memory);
+    this.controller.previousValue = null;
+    this.controller.updateDisplay(memory);
     return memory;
   }
 }

@@ -40,109 +40,55 @@ export class CalculatorController {
   setOperation(symbol) {
     switch (symbol) {
       case '+':
-        this.invoker.setCommand(new AddCommand());
+        this.invoker.setCommand(new AddCommand(this));
         break;
       case '-':
-        this.invoker.setCommand(new SubtractCommand());
+        this.invoker.setCommand(new SubtractCommand(this));
         break;
       case '*':
-        this.invoker.setCommand(new MultiplyCommand());
+        this.invoker.setCommand(new MultiplyCommand(this));
         break;
       case '/':
-        this.invoker.setCommand(new DivideCommand());
+        this.invoker.setCommand(new DivideCommand(this));
         break;
       case '+/-':
-        this.invoker.setCommand(new ToggleSignCommand());
+        this.invoker.setCommand(new ToggleSignCommand(this));
         break;
       case 'x²':
-        this.invoker.setCommand(new SquareCommand());
+        this.invoker.setCommand(new SquareCommand(this));
         break;
       case 'x³':
-        this.invoker.setCommand(new CubeCommand());
+        this.invoker.setCommand(new CubeCommand(this));
         break;
       case '%':
-        this.invoker.setCommand(new PercentageCommand());
+        this.invoker.setCommand(new PercentageCommand(this));
         break;
       case '1/x':
-        this.invoker.setCommand(new InverseCommand());
+        this.invoker.setCommand(new InverseCommand(this));
         break;
       case '!':
-        this.invoker.setCommand(new FactorialCommand());
+        this.invoker.setCommand(new FactorialCommand(this));
         break;
       case '10ˣ':
-        this.invoker.setCommand(new TenPowerCommand());
+        this.invoker.setCommand(new TenPowerCommand(this));
         break;
       case 'xʸ':
-        this.invoker.setCommand(new PowerCommand());
+        this.invoker.setCommand(new PowerCommand(this));
         break;
       case '√':
-        this.invoker.setCommand(new SquareRootCommand());
+        this.invoker.setCommand(new SquareRootCommand(this));
         break;
       case '∛':
-        this.invoker.setCommand(new CubeRootCommand());
+        this.invoker.setCommand(new CubeRootCommand(this));
         break;
     }
 
-    if (this.invoker.command?.isUnary) {
-      this.applyUnaryOperation();
-      return;
-    }
-
-    if (this.currentValue !== null && this.operator !== null) {
-      this.executeOperation();
-      this.previousValue = this.currentValue;
-    } else {
-      this.previousValue = this.currentValue;
-    }
-
-    this.currentValue = '';
-    this.operator = symbol;
-  }
-
-  applyUnaryOperation() {
     if (!this.invoker.command?.isUnary) {
-      return;
-    }
-    try {
-      const value = parseFloat(this.currentValue);
-      const rawResult = this.invoker.execute(value);
-      const result = parseFloat(rawResult.toFixed(10));
-      this.currentValue = String(result);
-      this.lastCommand = this.invoker.command;
-      this.updateDisplay(this.currentValue);
-    } catch (error) {
-      this.updateDisplay(error);
-    }
-  }
-
-  executeOperation() {
-    if (this.operator === null && this.lastCommand && this.lastOperand !== null) {
-      const a = parseFloat(this.currentValue);
-      const b = parseFloat(this.lastOperand);
-      const rawResult = this.invoker.execute(a, b);
-      const result = parseFloat(rawResult.toFixed(10));
-      this.updateDisplay(result);
-      this.currentValue = String(result);
-    }
-
-    if (this.previousValue === null || this.currentValue === null) {
-      return;
-    }
-
-    const a = parseFloat(this.previousValue);
-    const b = parseFloat(this.currentValue);
-
-    try {
-      this.lastOperand = this.currentValue;
-      const rawResult = this.invoker.execute(a, b);
-      const result = parseFloat(rawResult.toFixed(10));
-      this.updateDisplay(result);
-      this.currentValue = String(result);
-      this.previousValue = null;
-      this.operator = null;
-      this.lastCommand = this.invoker.command;
-    } catch (error) {
-      this.updateDisplay(error);
+      if (this.currentValue !== null) {
+        this.previousValue = this.currentValue;
+        this.currentValue = '';
+      }
+      this.operator = symbol;
     }
   }
 
@@ -173,35 +119,20 @@ export class CalculatorController {
   }
 
   memoryOperations(symbol) {
-    const value = parseFloat(this.currentValue);
-
     switch (symbol) {
       case 'MC':
-        this.invoker.setCommand(new MemoryClearCommand());
-        this.memory = this.invoker.execute();
-        this.updateDisplay(this.currentValue);
+        this.invoker.setCommand(new MemoryClearCommand(this));
         break;
-
       case 'MR':
-        this.invoker.setCommand(new MemoryRecallCommand());
-        const recalled = this.invoker.execute(this.memory);
-        this.currentValue = String(recalled);
-        this.updateDisplay(this.currentValue);
+        this.invoker.setCommand(new MemoryRecallCommand(this));
         break;
-
       case 'M+':
-        this.invoker.setCommand(new MemoryAddCommand());
-        this.memory = this.invoker.execute(value, this.memory);
+        this.invoker.setCommand(new MemoryAddCommand(this));
         break;
-
       case 'M-':
-        this.invoker.setCommand(new MemorySubtractCommand());
-        this.memory = this.invoker.execute(value, this.memory);
+        this.invoker.setCommand(new MemorySubtractCommand(this));
         break;
     }
-
-    this.currentValue = '0';
-    this.previousValue = null;
   }
 
   updateDisplay(value) {
@@ -211,5 +142,16 @@ export class CalculatorController {
       const formatted = value.toString().slice(0, 12);
       this.displayElement.textContent = formatted;
     }
+  }
+
+  getState() {
+    return {
+      currentValue: this.currentValue,
+      previousValue: this.previousValue,
+      lastOperand: this.lastOperand,
+      operator: this.operator,
+      lastCommand: this.lastCommand,
+      memory: this.memory,
+    };
   }
 }

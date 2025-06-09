@@ -7,10 +7,7 @@ export class CalculatorInvoker {
     this.command = command;
   }
 
-  execute(a, b) {
-    if (this.command.isUnary) {
-      return this.command.execute(a);
-    }
-    return this.command.execute(a, b);
+  execute() {
+    return this.command.execute();
   }
 }
