@@ -152,7 +152,12 @@ export class SquareRootCommand extends Command {
     this.isUnary = true;
   }
   execute() {
-    return executeUnaryOperation(this.controller, (a) => a ** 0.5);
+    return executeUnaryOperation(this.controller, (a) => {
+      if (a < 0) {
+        throw new Error('Negative number');
+      }
+      return a ** 0.5;
+    });
   }
 }
 
@@ -163,7 +168,12 @@ export class CubeRootCommand extends Command {
   }
 
   execute() {
-    return executeUnaryOperation(this.controller, (a) => a ** (1 / 3));
+    return executeUnaryOperation(this.controller, (a) => {
+      if (a < 0) {
+        throw new Error('Negative number');
+      }
+      return a ** (1 / 3);
+    });
   }
 }
 

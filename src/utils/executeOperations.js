@@ -31,7 +31,6 @@ export function executeBinaryOperation(controller, operationCallback) {
     return result;
   } catch (error) {
     controller.updateDisplay(error.message);
-    throw error;
   }
 }
 
@@ -48,6 +47,5 @@ export function executeUnaryOperation(controller, operationCallback) {
     return result;
   } catch (error) {
     controller.updateDisplay(error.message);
-    throw error;
   }
 }

@@ -22,27 +22,15 @@ export const Calculator = () => {
     } else if (operationButtons.includes(value)) {
       controller.setOperation(value);
       if (controller.invoker.command?.isUnary) {
-        try {
-          controller.invoker.execute();
-        } catch (error) {
-          controller.updateDisplay(error);
-        }
+        controller.invoker.execute();
       }
     } else if (value === '=') {
-      try {
-        controller.invoker.execute();
-      } catch (error) {
-        controller.updateDisplay(error);
-      }
+      controller.invoker.execute();
     } else if (value === 'AC') {
       controller.clear();
     } else if (memoryOperationButtons.includes(value)) {
-      try {
-        controller.memoryOperations(value);
-        controller.invoker.execute();
-      } catch (error) {
-        controller.updateDisplay(error);
-      }
+      controller.memoryOperations(value);
+      controller.invoker.execute();
     }
   });
 
