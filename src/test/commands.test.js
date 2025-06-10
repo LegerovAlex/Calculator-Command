@@ -19,119 +19,231 @@ import {
   ToggleSignCommand,
 } from '../logic/commands';
 
+import { CalculatorController } from '../logic/calculatorController';
+
 describe('Binary commands', () => {
+  let mockDisplayElement;
+  let controller;
+  let invoker;
+
+  beforeEach(() => {
+    mockDisplayElement = { textContent: '' };
+    controller = new CalculatorController(mockDisplayElement);
+    invoker = controller.invoker;
+  });
+
   test('AddCommand adds two numbers', () => {
-    const addCommand = new AddCommand();
-    expect(addCommand.execute(2, 4)).toBe(6);
-    expect(addCommand.execute(0, 0)).toBe(0);
-    expect(addCommand.execute(-2, -4)).toBe(-6);
+    controller.currentValue = '7';
+    controller.previousValue = '5';
+    invoker.setCommand(new AddCommand(controller));
+    invoker.execute();
+    expect(controller.currentValue).toBe('12');
+    expect(mockDisplayElement.textContent).toBe('12');
   });
+
+  test('SubtractCommand subtracts two numbers', () => {
+    controller.currentValue = '3';
+    controller.previousValue = '10';
+    invoker.setCommand(new SubtractCommand(controller));
+    invoker.execute();
+    expect(controller.currentValue).toBe('7');
+    expect(mockDisplayElement.textContent).toBe('7');
+  });
+
+  test('MultiplyCommand multiplies two numbers', () => {
+    controller.currentValue = '4';
+    controller.previousValue = '5';
+    invoker.setCommand(new MultiplyCommand(controller));
+    invoker.execute();
+    expect(controller.currentValue).toBe('20');
+    expect(mockDisplayElement.textContent).toBe('20');
+  });
+
   test('DivideCommand divides two numbers', () => {
-    const divideCommand = new DivideCommand();
-    expect(divideCommand.execute(6, 2)).toBe(3);
-    expect(divideCommand.execute(-10, 2)).toBe(-5);
-    expect(divideCommand.execute(0, 5)).toBe(0);
-    expect(() => divideCommand.execute(5, 0)).toThrow('Division by zero');
+    controller.currentValue = '2';
+    controller.previousValue = '10';
+    invoker.setCommand(new DivideCommand(controller));
+    invoker.execute();
+    expect(controller.currentValue).toBe('5');
+    expect(mockDisplayElement.textContent).toBe('5');
   });
-  test('MultiplyCommand multiply two numbers', () => {
-    const divideCommand = new MultiplyCommand();
-    expect(divideCommand.execute(2, 4)).toBe(8);
-    expect(divideCommand.execute(-12, 2)).toBe(-24);
-    expect(divideCommand.execute(0, 3)).toBe(0);
+
+  test('DivideCommand handles division by zero', () => {
+    controller.currentValue = '0';
+    controller.previousValue = '5';
+    invoker.setCommand(new DivideCommand(controller));
+    invoker.execute();
+    expect(mockDisplayElement.textContent).toBe('Division by zero');
   });
-  test('SubtractCommand subtract two numbers', () => {
-    const subtractCommand = new SubtractCommand();
-    expect(subtractCommand.execute(9, 3)).toBe(6);
-    expect(subtractCommand.execute(-14, -6)).toBe(-8);
-    expect(subtractCommand.execute(5, -2)).toBe(7);
-  });
+
   test('PowerCommand raises to power', () => {
-    const powerCommand = new PowerCommand();
-    expect(powerCommand.execute(2, 3)).toBe(8);
-    expect(powerCommand.execute(4, 0.5)).toBe(2);
-    expect(powerCommand.execute(5, 0)).toBe(1);
-    expect(powerCommand.execute(2, -1)).toBe(0.5);
-  });
-  test('MemoryAddCommand adds to memory', () => {
-    const memoryAddCommand = new MemoryAddCommand();
-    expect(memoryAddCommand.execute(5, 10)).toBe(15);
-  });
-  test('MemorySubtractCommand subtracts from memory', () => {
-    const memorySubtractCommand = new MemorySubtractCommand();
-    expect(memorySubtractCommand.execute(3, 10)).toBe(7);
+    controller.currentValue = '3';
+    controller.previousValue = '2';
+    invoker.setCommand(new PowerCommand(controller));
+    invoker.execute();
+    expect(controller.currentValue).toBe('8');
+    expect(mockDisplayElement.textContent).toBe('8');
   });
 });
 
-describe('Unary commands', () => {
-  test('ToggleSignCommand toggles sign', () => {
-    const toggleSignCommand = new ToggleSignCommand();
-    expect(toggleSignCommand.execute(5)).toBe(-5);
-    expect(toggleSignCommand.execute(-3)).toBe(3);
-    expect(toggleSignCommand.execute(0)).toBe(-0);
+describe('Unary Commands', () => {
+  let mockDisplayElement;
+  let controller;
+  let invoker;
+
+  beforeEach(() => {
+    mockDisplayElement = { textContent: '' };
+    controller = new CalculatorController(mockDisplayElement);
+    invoker = controller.invoker;
   });
 
-  test('SquareCommand squares a number', () => {
-    const squareCommand = new SquareCommand();
-    expect(squareCommand.execute(3)).toBe(9);
-    expect(squareCommand.execute(-4)).toBe(16);
-    expect(squareCommand.execute(0)).toBe(0);
+  test('ToggleSignCommand negates number', () => {
+    controller.currentValue = '5';
+    invoker.setCommand(new ToggleSignCommand(controller));
+    invoker.execute();
+    expect(controller.currentValue).toBe('-5');
+    expect(mockDisplayElement.textContent).toBe('-5');
   });
 
-  test('CubeCommand cubes a number', () => {
-    const cubeCommand = new CubeCommand();
-    expect(cubeCommand.execute(2)).toBe(8);
-    expect(cubeCommand.execute(-2)).toBe(-8);
-    expect(cubeCommand.execute(0)).toBe(0);
+  test('SquareCommand squares number', () => {
+    controller.currentValue = '4';
+    invoker.setCommand(new SquareCommand(controller));
+    invoker.execute();
+    expect(controller.currentValue).toBe('16');
+    expect(mockDisplayElement.textContent).toBe('16');
   });
 
-  test('PercentageCommand converts to percent', () => {
-    const percentageCommand = new PercentageCommand();
-    expect(percentageCommand.execute(50)).toBe(0.5);
-    expect(percentageCommand.execute(200)).toBe(2);
-    expect(percentageCommand.execute(0)).toBe(0);
+  test('CubeCommand cubes number', () => {
+    controller.currentValue = '3';
+    invoker.setCommand(new CubeCommand(controller));
+    invoker.execute();
+    expect(controller.currentValue).toBe('27');
+    expect(mockDisplayElement.textContent).toBe('27');
   });
 
-  test('InverseCommand returns reciprocal', () => {
-    const inverseCommand = new InverseCommand();
-    expect(inverseCommand.execute(2)).toBe(0.5);
-    expect(inverseCommand.execute(4)).toBe(0.25);
-    expect(() => inverseCommand.execute(0)).toThrow('Division by zero');
+  test('PercentageCommand calculates percentage', () => {
+    controller.currentValue = '50';
+    invoker.setCommand(new PercentageCommand(controller));
+    invoker.execute();
+    expect(controller.currentValue).toBe('0.5');
+    expect(mockDisplayElement.textContent).toBe('0.5');
   });
 
-  test('FactorialCommand returns factorial', () => {
-    const factorialCommand = new FactorialCommand();
-    expect(factorialCommand.execute(0)).toBe(1);
-    expect(factorialCommand.execute(5)).toBe(120);
-    expect(() => factorialCommand.execute(-1)).toThrow('Negative number');
+  test('InverseCommand calculates reciprocal', () => {
+    controller.currentValue = '4';
+    invoker.setCommand(new InverseCommand(controller));
+    invoker.execute();
+    expect(controller.currentValue).toBe('0.25');
+    expect(mockDisplayElement.textContent).toBe('0.25');
   });
 
-  test('TenPowerCommand raises 10 to the power', () => {
-    const tenPowerCommand = new TenPowerCommand();
-    expect(tenPowerCommand.execute(2)).toBe(100);
-    expect(tenPowerCommand.execute(0)).toBe(1);
-    expect(tenPowerCommand.execute(1)).toBe(10);
+  test('InverseCommand handles division by zero', () => {
+    controller.currentValue = '0';
+    invoker.setCommand(new InverseCommand(controller));
+    invoker.execute();
+    expect(mockDisplayElement.textContent).toBe('Division by zero');
   });
 
-  test('SquareRootCommand returns square root', () => {
-    const squareRootCommand = new SquareRootCommand();
-    expect(squareRootCommand.execute(4)).toBe(2);
-    expect(squareRootCommand.execute(0)).toBe(0);
-    expect(squareRootCommand.execute(9)).toBe(3);
+  test('FactorialCommand calculates factorial', () => {
+    controller.currentValue = '5';
+    invoker.setCommand(new FactorialCommand(controller));
+    invoker.execute();
+    expect(controller.currentValue).toBe('120');
+    expect(mockDisplayElement.textContent).toBe('120');
   });
 
-  test('CubeRootCommand returns cube root', () => {
-    const cubeRootCommand = new CubeRootCommand();
-    expect(cubeRootCommand.execute(8)).toBe(2);
-    expect(cubeRootCommand.execute(27)).toBe(3);
-    expect(() => cubeRootCommand.execute(-8)).toThrow('Negative number');
+  test('FactorialCommand handles negative numbers', () => {
+    controller.currentValue = '-3';
+    invoker.setCommand(new FactorialCommand(controller));
+    invoker.execute();
+    expect(mockDisplayElement.textContent).toBe('Negative number');
   });
-  test('MemoryClearCommand resets memory to 0', () => {
-    const memoryClearCommand = new MemoryClearCommand();
-    expect(memoryClearCommand.execute()).toBe(0);
+
+  test('TenPowerCommand raises 10 to power', () => {
+    controller.currentValue = '2';
+    invoker.setCommand(new TenPowerCommand(controller));
+    invoker.execute();
+    expect(controller.currentValue).toBe('100');
+    expect(mockDisplayElement.textContent).toBe('100');
   });
-  test('MemoryRecallCommand returns memory value', () => {
-    const memoryRecallCommand = new MemoryRecallCommand();
-    expect(memoryRecallCommand.execute(42)).toBe(42);
-    expect(memoryRecallCommand.execute(0)).toBe(0);
+
+  test('SquareRootCommand calculates square root', () => {
+    controller.currentValue = '9';
+    invoker.setCommand(new SquareRootCommand(controller));
+    invoker.execute();
+    expect(controller.currentValue).toBe('3');
+    expect(mockDisplayElement.textContent).toBe('3');
+  });
+
+  test('SquareRootCommand handles negative input', () => {
+    controller.currentValue = '-9';
+    invoker.setCommand(new SquareRootCommand(controller));
+    invoker.execute();
+    expect(mockDisplayElement.textContent).toBe('Negative number');
+  });
+
+  test('CubeRootCommand calculates cube root', () => {
+    controller.currentValue = '27';
+    invoker.setCommand(new CubeRootCommand(controller));
+    invoker.execute();
+    expect(controller.currentValue).toBe('3');
+    expect(mockDisplayElement.textContent).toBe('3');
+  });
+
+  test('CubeRootCommand handles negative input', () => {
+    controller.currentValue = '-8';
+    invoker.setCommand(new CubeRootCommand(controller));
+    invoker.execute();
+    expect(mockDisplayElement.textContent).toBe('Negative number');
+  });
+});
+
+describe('Memory Commands', () => {
+  let mockDisplayElement;
+  let controller;
+  let invoker;
+
+  beforeEach(() => {
+    mockDisplayElement = { textContent: '' };
+    controller = new CalculatorController(mockDisplayElement);
+    invoker = controller.invoker;
+    controller.memory = 10;
+  });
+
+  test('MemoryClearCommand resets memory and values', () => {
+    controller.currentValue = '25';
+    controller.previousValue = '5';
+    invoker.setCommand(new MemoryClearCommand(controller));
+    invoker.execute();
+    expect(controller.memory).toBe(0);
+    expect(controller.currentValue).toBe('0');
+    expect(controller.previousValue).toBe(null);
+    expect(mockDisplayElement.textContent).toBe('0');
+  });
+
+  test('MemoryAddCommand adds current value to memory', () => {
+    controller.currentValue = '5';
+    invoker.setCommand(new MemoryAddCommand(controller));
+    invoker.execute();
+    expect(controller.memory).toBe(15);
+    expect(controller.currentValue).toBe('0');
+    expect(mockDisplayElement.textContent).toBe('5');
+  });
+
+  test('MemorySubtractCommand subtracts current value from memory', () => {
+    controller.currentValue = '4';
+    invoker.setCommand(new MemorySubtractCommand(controller));
+    invoker.execute();
+    expect(controller.memory).toBe(6);
+    expect(controller.currentValue).toBe('0');
+    expect(mockDisplayElement.textContent).toBe('4');
+  });
+
+  test('MemoryRecallCommand sets current value from memory', () => {
+    invoker.setCommand(new MemoryRecallCommand(controller));
+    invoker.execute();
+    expect(controller.currentValue).toBe('10');
+    expect(controller.previousValue).toBe(null);
+    expect(mockDisplayElement.textContent).toBe('10');
   });
 });

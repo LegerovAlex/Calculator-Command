@@ -1,16 +1,13 @@
 import { CalculatorController } from '../logic/calculatorController';
 import { AddCommand } from '../logic/commands';
 
-const mockDisplayElement = {
-  textContent: '',
-};
-
 describe('CalculatorController and CalculatorInvoker Interaction', () => {
+  let mockDisplayElement;
   let controller;
   let invoker;
 
   beforeEach(() => {
-    mockDisplayElement.textContent = '';
+    mockDisplayElement = { textContent: '' };
     controller = new CalculatorController(mockDisplayElement);
     invoker = controller.invoker;
   });
@@ -20,7 +17,7 @@ describe('CalculatorController and CalculatorInvoker Interaction', () => {
     controller.setOperation('+');
     expect(invoker.command).toBeInstanceOf(AddCommand);
     controller.inputDigit('3');
-    controller.executeOperation();
+    invoker.execute();
     expect(controller.currentValue).toBe('9');
     expect(mockDisplayElement.textContent).toBe('9');
   });
